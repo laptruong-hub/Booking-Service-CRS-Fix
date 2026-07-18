@@ -596,8 +596,7 @@ public class RentalGroupServiceImpl implements RentalGroupService {
     }
 
     private void transitionToInProgressIfAllActive(RentalGroup group) {
-        List<RentalUnit> allUnits = rentalUnitRepository.findByRentalGroupId(group.getId());
-        boolean allActive = allUnits.stream()
+        boolean allActive = group.getRentalUnits().stream()
                 .filter(u -> u.getStatus() != RentalUnitStatus.CANCELLED)
                 .allMatch(u -> u.getStatus() == RentalUnitStatus.ACTIVE);
         if (allActive) {
@@ -608,8 +607,7 @@ public class RentalGroupServiceImpl implements RentalGroupService {
     }
 
     private void transitionToCompletedIfAllReturned(RentalGroup group) {
-        List<RentalUnit> allUnits = rentalUnitRepository.findByRentalGroupId(group.getId());
-        boolean allReturned = allUnits.stream()
+        boolean allReturned = group.getRentalUnits().stream()
                 .filter(u -> u.getStatus() != RentalUnitStatus.CANCELLED)
                 .allMatch(u -> u.getStatus() == RentalUnitStatus.RETURNED);
         if (allReturned) {

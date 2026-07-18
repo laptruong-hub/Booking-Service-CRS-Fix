@@ -92,4 +92,23 @@ public interface RentalGroupRepository extends JpaRepository<RentalGroup, Long> 
 
     /** 10 booking mới nhất để hiển thị hoạt động gần đây */
     List<RentalGroup> findTop10ByOrderByCreatedAtDesc();
+
+    // ================================================================
+    // DRIVER DASHBOARD QUERIES
+    // ================================================================
+
+    @Query("SELECT COUNT(DISTINCT rg) FROM RentalGroup rg JOIN rg.rentalUnits ru WHERE ru.driver.id = :driverId")
+    long countTotalTripsByDriverId(@Param("driverId") Long driverId);
+
+    @Query("SELECT COUNT(DISTINCT rg) FROM RentalGroup rg JOIN rg.rentalUnits ru WHERE ru.driver.id = :driverId AND rg.status = 'COMPLETED'")
+    long countCompletedTripsByDriverId(@Param("driverId") Long driverId);
+
+    @Query("SELECT COUNT(DISTINCT rg) FROM RentalGroup rg JOIN rg.rentalUnits ru WHERE ru.driver.id = :driverId AND rg.status = 'CANCELLED'")
+    long countCancelledTripsByDriverId(@Param("driverId") Long driverId);
+
+    @Query("SELECT COALESCE(SUM(rg.totalAmount), 0) FROM RentalGroup rg JOIN rg.rentalUnits ru WHERE ru.driver.id = :driverId AND rg.status = 'COMPLETED'")
+    BigDecimal sumEarningsByDriverId(@Param("driverId") Long driverId);
+
+    @Query("SELECT COALESCE(SUM(rg.totalAmount), 0) FROM RentalGroup rg JOIN rg.rentalUnits ru WHERE ru.driver.id = :driverId AND rg.status = 'COMPLETED' AND rg.createdAt >= :startOfMonth")
+    BigDecimal sumEarningsByDriverIdAndMonth(@Param("driverId") Long driverId, @Param("startOfMonth") LocalDateTime startOfMonth);
 }

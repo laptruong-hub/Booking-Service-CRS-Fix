@@ -27,4 +27,9 @@ public interface DashboardService {
      * 10 booking mới nhất để hiển thị trong bảng hoạt động gần đây.
      */
     List<RecentActivityResponse> getRecentActivities();
+
+    /**
+     * Lấy dữ liệu cho Dashboard Tài xế
+     */
+    com.crs.bookingservice.dto.response.DriverDashboardResponse getDriverDashboard(Long driverId);
 }
