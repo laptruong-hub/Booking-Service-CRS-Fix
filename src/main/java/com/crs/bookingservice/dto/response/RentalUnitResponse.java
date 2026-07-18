@@ -38,4 +38,5 @@ public class RentalUnitResponse {
     BigDecimal unitPrice;
     BigDecimal faultPercent;
     RentalUnitStatus status;
+    Boolean hasFeedback;
 }

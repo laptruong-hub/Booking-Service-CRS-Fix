@@ -50,6 +50,7 @@ public class RentalGroupServiceImpl implements RentalGroupService {
     private final RentalUnitRepository rentalUnitRepository;
     private final DriverProfileRepository driverProfileRepository;
     private final HandoverProtocolRepository handoverProtocolRepository;
+    private final DriverFeedbackRepository driverFeedbackRepository;
     private final InvoiceRepository invoiceRepository;
     private final IamServiceClient iamServiceClient;
     private final CarManagementClient carManagementClient;
@@ -683,6 +684,11 @@ public class RentalGroupServiceImpl implements RentalGroupService {
     }
 
     private RentalUnitResponse toUnitResponse(RentalUnit unit) {
+        Boolean hasFeedback = false;
+        if (unit.getId() != null) {
+            hasFeedback = driverFeedbackRepository.existsByRentalUnitId(unit.getId());
+        }
+
         RentalUnitResponse response = RentalUnitResponse.builder()
                 .id(unit.getId())
                 .vehicleId(unit.getVehicleId())
@@ -694,6 +700,7 @@ public class RentalGroupServiceImpl implements RentalGroupService {
                 .unitPrice(unit.getUnitPrice())
                 .faultPercent(unit.getFaultPercent())
                 .status(unit.getStatus())
+                .hasFeedback(hasFeedback)
                 .build();
 
         // Enrich vehicle info từ car-management
