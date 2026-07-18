@@ -61,9 +61,9 @@ springdoc:
 feign:
   clients:
     iam-service:
-      url: http://localhost:8080
+      url: ${IAM_SERVICE_URL:http://localhost:8080}
     car-management-service:
-      url: http://localhost:8081
+      url: ${CAR_MANAGEMENT_SERVICE_URL:http://localhost:8081}
   client:
     config:
       default:
