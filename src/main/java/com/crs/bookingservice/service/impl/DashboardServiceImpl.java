@@ -5,7 +5,9 @@ import com.crs.bookingservice.client.dto.IamUserDto;
 import com.crs.bookingservice.dto.response.ChartDataPointResponse;
 import com.crs.bookingservice.dto.response.DashboardOverviewResponse;
 import com.crs.bookingservice.dto.response.RecentActivityResponse;
+import com.crs.bookingservice.dto.response.DriverDashboardResponse;
 import com.crs.bookingservice.entity.RentalGroup;
+import com.crs.bookingservice.repository.DriverFeedbackRepository;
 import com.crs.bookingservice.repository.RentalGroupRepository;
 import com.crs.bookingservice.service.DashboardService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +33,7 @@ import java.util.Map;
 public class DashboardServiceImpl implements DashboardService {
 
     private final RentalGroupRepository rentalGroupRepository;
+    private final DriverFeedbackRepository driverFeedbackRepository;
     private final IamServiceClient iamServiceClient;
 
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -162,6 +166,48 @@ public class DashboardServiceImpl implements DashboardService {
                     .build());
         }
         return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DriverDashboardResponse getDriverDashboard(Long driverId) {
+        Double avgRating = driverFeedbackRepository.getAverageRatingByDriverId(driverId);
+        Long totalFeedback = driverFeedbackRepository.countFeedbackByDriverId(driverId);
+
+        // Làm tròn số sao 1 chữ số thập phân bằng RoundingMode.HALF_UP
+        BigDecimal ratingDecimal = BigDecimal.valueOf(avgRating).setScale(1, RoundingMode.HALF_UP);
+        Double roundedRating = ratingDecimal.doubleValue();
+
+        long totalTrips = rentalGroupRepository.countTotalTripsByDriverId(driverId);
+        long completedTrips = rentalGroupRepository.countCompletedTripsByDriverId(driverId);
+        long cancelledTrips = rentalGroupRepository.countCancelledTripsByDriverId(driverId);
+
+        BigDecimal totalEarnings = rentalGroupRepository.sumEarningsByDriverId(driverId);
+
+        LocalDateTime startOfMonth = YearMonth.now().atDay(1).atStartOfDay();
+        BigDecimal thisMonthEarnings = rentalGroupRepository.sumEarningsByDriverIdAndMonth(driverId, startOfMonth);
+
+        double acceptanceRate = 0.0;
+        double cancellationRate = 0.0;
+        if (totalTrips > 0) {
+            acceptanceRate = (double) completedTrips / totalTrips * 100;
+            cancellationRate = (double) cancelledTrips / totalTrips * 100;
+        }
+
+        // làm tròn 1 chữ số thập phân
+        acceptanceRate = BigDecimal.valueOf(acceptanceRate).setScale(1, RoundingMode.HALF_UP).doubleValue();
+        cancellationRate = BigDecimal.valueOf(cancellationRate).setScale(1, RoundingMode.HALF_UP).doubleValue();
+
+        return DriverDashboardResponse.builder()
+                .rating(roundedRating)
+                .totalRating(totalFeedback)
+                .totalTrips(totalTrips)
+                .completedTrips(completedTrips)
+                .thisMonthEarnings(thisMonthEarnings)
+                .totalEarnings(totalEarnings)
+                .acceptanceRate(acceptanceRate)
+                .cancellationRate(cancellationRate)
+                .build();
     }
 
     // ================================================================

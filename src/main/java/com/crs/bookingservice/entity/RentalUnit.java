@@ -102,8 +102,9 @@ public class RentalUnit {
     @Builder.Default
     List<IncurredFee> incurredFees = new ArrayList<>();
 
-    @OneToOne(mappedBy = "rentalUnit", cascade = CascadeType.ALL)
-    HandoverProtocol handoverProtocol;
+    @OneToMany(mappedBy = "rentalUnit", cascade = CascadeType.ALL)
+    @Builder.Default
+    List<HandoverProtocol> handoverProtocols = new ArrayList<>();
 
     @OneToMany(mappedBy = "rentalUnit", cascade = CascadeType.ALL)
     @Builder.Default

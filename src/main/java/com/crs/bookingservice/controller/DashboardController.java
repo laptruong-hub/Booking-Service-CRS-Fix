@@ -3,6 +3,7 @@ package com.crs.bookingservice.controller;
 import com.crs.bookingservice.dto.response.ApiResponse;
 import com.crs.bookingservice.dto.response.ChartDataPointResponse;
 import com.crs.bookingservice.dto.response.DashboardOverviewResponse;
+import com.crs.bookingservice.dto.response.DriverDashboardResponse;
 import com.crs.bookingservice.dto.response.RecentActivityResponse;
 import com.crs.bookingservice.service.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,5 +68,16 @@ public class DashboardController {
         log.info("REST request get recent activities");
         List<RecentActivityResponse> activities = dashboardService.getRecentActivities();
         return ResponseEntity.ok(ApiResponse.success(activities, "Recent activities retrieved"));
+    }
+
+    @GetMapping("/driver/{driverId}")
+    @Operation(
+            summary = "Dashboard tài xế",
+            description = "Lấy dữ liệu tổng quan cho tài xế bao gồm điểm số, số chuyến và doanh thu"
+    )
+    public ResponseEntity<ApiResponse<DriverDashboardResponse>> getDriverDashboard(@PathVariable Long driverId) {
+        log.info("REST request get driver dashboard, driverId={}", driverId);
+        DriverDashboardResponse dashboard = dashboardService.getDriverDashboard(driverId);
+        return ResponseEntity.ok(ApiResponse.success(dashboard, "Driver dashboard retrieved"));
     }
 }
