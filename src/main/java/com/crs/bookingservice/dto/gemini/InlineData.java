@@ -10,14 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Part {
-
-    private String text;
-
-    @JsonProperty("inline_data")
-    private InlineData inlineData;
-
-    public Part(String text) {
-        this.text = text;
-    }
+public class InlineData {
+    
+    @JsonProperty("mime_type")
+    private String mimeType;
+    
+    private String data; // Base64 string
 }

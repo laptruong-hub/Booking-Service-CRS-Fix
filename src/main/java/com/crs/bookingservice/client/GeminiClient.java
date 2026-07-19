@@ -23,6 +23,24 @@ public class GeminiClient {
                         List.of(new Content(List.of(new Part(prompt))))
                 );
 
+        return executeRequest(geminiRequest);
+    }
+
+    public String generateContentWithImage(String prompt, String mimeType, String base64Image) {
+        Part textPart = new Part(prompt);
+        
+        Part imagePart = new Part();
+        imagePart.setInlineData(new InlineData(mimeType, base64Image));
+
+        GeminiRequest geminiRequest =
+                new GeminiRequest(
+                        List.of(new Content(List.of(textPart, imagePart)))
+                );
+
+        return executeRequest(geminiRequest);
+    }
+
+    private String executeRequest(GeminiRequest geminiRequest) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 

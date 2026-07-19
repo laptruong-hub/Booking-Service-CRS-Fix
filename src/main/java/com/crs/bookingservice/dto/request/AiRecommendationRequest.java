@@ -15,4 +15,8 @@ public class AiRecommendationRequest {
 
     private boolean selfDrive;
 
+    private String origin;
+
+    private String destination;
+
 }
