@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/booking_service_db
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:123456}
+    password: ${SPRING_DATASOURCE_PASSWORD:12345}
     driver-class-name: org.postgresql.Driver
 
   # JPA/Hibernate Configuration
@@ -70,3 +70,8 @@ feign:
         connect-timeout: 5000
         read-timeout: 10000
         logger-level: BASIC
+
+
+gemini:
+  api-key: AIzaSyAZlhJb_onuM2FbPckNfgeh3EVQcCf916g
+  model: gemini-2.5-flash
